@@ -1,0 +1,23 @@
+{
+    "name": "counter-app",
+    "methods": [
+        {
+            "name": "inc",
+            "args": [],
+            "returns": {
+                "type": "uint64"
+            },
+            "desc": "increment the counter"
+        },
+        {
+            "name": "dec",
+            "args": [],
+            "returns": {
+                "type": "uint64"
+            },
+            "desc": "decrement the counter"
+        }
+    ],
+    "desc": "count by increments or decrements of 1",
+    "networks": {}
+}

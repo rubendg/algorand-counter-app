@@ -1,0 +1,30 @@
+[default]
+sender_mnemonic = zoo dumb fish draw panda capable copy balcony extend innocent lazy violin electric unusual interest once mad search cheap sentence unaware soon retire abstract remain
+algod_address = http://localhost:4001
+algod_client_token = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+[testnet-purestake]
+sender_mnemonic= zoo dumb fish draw panda capable copy balcony extend innocent lazy violin electric unusual interest once mad search cheap sentence unaware soon retire abstract remain
+algod_address=https://testnet-algorand.api.purestake.io/ps2
+algod_client_token=
+
+[betanet-purestake]
+sender_mnemonic= zoo dumb fish draw panda capable copy balcony extend innocent lazy violin electric unusual interest once mad search cheap sentence unaware soon retire abstract remain
+algod_address=https://betanet-algorand.api.purestake.io/ps2
+
+[mainnet-purestake]
+sender_mnemonic= zoo dumb fish draw panda capable copy balcony extend innocent lazy violin electric unusual interest once mad search cheap sentence unaware soon retire abstract remain
+algod_address=https://mainnet-algorand.api.purestake.io/ps2
+
+[testnet-algoexplorer]
+sender_mnemonic= zoo dumb fish draw panda capable copy balcony extend innocent lazy violin electric unusual interest once mad search cheap sentence unaware soon retire abstract remain
+algod_address=https://node.testnet.algoexplorerapi.io
+
+[betanet-algoexplorer]
+sender_mnemonic= zoo dumb fish draw panda capable copy balcony extend innocent lazy violin electric unusual interest once mad search cheap sentence unaware soon retire abstract remain
+algod_address=https://node.betanet.algoexplorerapi.io
+
+[mainnet-algoexplorer]
+sender_mnemonic= zoo dumb fish draw panda capable copy balcony extend innocent lazy violin electric unusual interest once mad search cheap sentence unaware soon retire abstract remain
+algod_address=https://node.algoexplorerapi.io
+
