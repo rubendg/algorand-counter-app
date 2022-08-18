@@ -1,4 +1,4 @@
-TEST_PARALLELISM := 4
+TEST_PARALLELISM := 0
 NETWORK := default
 
 .PHONY: build
@@ -16,7 +16,7 @@ setup:
 build:
 	@rm -f ./build/*.teal ./build/*.json
 	@mkdir -p ./build/
-	@python tools/compile.py contract.counter
+	@python tools/compile.py
 
 ALLPY = tools contract tests
 black:

@@ -1,11 +1,14 @@
 import sys
 import os
 
+from algosdk.atomic_transaction_composer import AccountTransactionSigner
+from beaker.client import ApplicationClient
+
 sys.path.append(os.getcwd())
 
 if __name__ == "__main__":
     from tools.helpers import parse_deployment_config, algod_client, view_tx_url
-    from contract.client import Counter
+    from contract.counter import CounterApp
 
     if len(sys.argv) < 2:
         raise Exception("Missing app_id")
@@ -27,9 +30,8 @@ if __name__ == "__main__":
         )
     )
 
-    tx_id, tx_info = Counter.instance(
-        algod_client=client, app_id=app_id, client_sk=pk
-    ).delete()
+    app_client = ApplicationClient(client, CounterApp(), app_id=app_id, signer=AccountTransactionSigner(pk))
+    tx_id = app_client.delete()
 
     print("Removed application in tx_id:{0}".format(tx_id))
 

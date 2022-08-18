@@ -1,11 +1,10 @@
-from contract.client import Counter, compile_teal
-from helpers import (
-    call_sandbox_command,
-    create_test_account,
-)
-from algosdk.v2client.algod import AlgodClient
-from algosdk.v2client.indexer import IndexerClient
+from beaker import sandbox, Application
+from beaker.client import ApplicationClient, LogicException
+
 from algosdk.error import AlgodHTTPError
+
+from contract.counter import CounterApp
+from tests.helpers import call_sandbox_command
 
 sandbox_dev_token = "a" * 64
 
@@ -15,133 +14,128 @@ def setup_module(module):
     call_sandbox_command("up", "dev")
 
 
+class NoopApp(Application):
+    pass
+
+
 class TestCounter:
-    algod_address = "http://localhost:4001"
-    algod_token = sandbox_dev_token
-    algod_client = AlgodClient(algod_token, algod_address)
 
-    indexer_address = "http://localhost:8980"
-    indexer_token = sandbox_dev_token
-    indexer_client = IndexerClient(indexer_token, indexer_address)
+    algod_client = sandbox.get_algod_client()
+    accounts = sandbox.get_accounts()
+    creator = accounts.pop()
+    other = accounts.pop()
 
-    def _setup_counter(self, start: int = 0):
-        self.private_key, self.address = create_test_account(
-            self.algod_client, self.indexer_client
-        )
-
-        self.contract = Counter.create(
-            algod_client=self.algod_client, client_sk=self.private_key, start=start
-        )
+    def _setup_counter(self):
+        client = ApplicationClient(self.algod_client, CounterApp(), signer=self.creator.signer)
+        return client, client.create()
 
     def test_starts_at_zero(self):
-        self._setup_counter()
+        client, _ = self._setup_counter()
 
-        global_state = self.contract.global_state()
+        st = client.get_application_state()
 
-        assert len(global_state) == 1
-        assert "counter" in global_state
-        assert global_state["counter"] == 0
+        assert len(st) == 1
+        assert "counter" in st
+        assert st["counter"] == 0
 
     def test_inc(self):
-        self._setup_counter()
+        client, _ = self._setup_counter()
 
-        result = self.contract.inc()
+        result = client.call(CounterApp.inc)
 
-        assert result == 1
-        global_state = self.contract.global_state()
-        assert global_state["counter"] == 1
+        assert result.return_value == 1
+        st = client.get_application_state()
+        assert st["counter"] == 1
+
+        result = client.call(CounterApp.inc)
+
+        assert result.return_value == 2
+        st = client.get_application_state()
+        assert st["counter"] == 2
 
     def test_anyone_can_inc(self):
-        self._setup_counter()
+        client, _ = self._setup_counter()
 
-        private_key, address = create_test_account(
-            self.algod_client, self.indexer_client
-        )
-        result = self.contract.inc(caller=address, caller_sk=private_key)
+        result = client.call(CounterApp.inc, sender=self.other.address, signer=self.other.signer)
 
-        assert result == 1
-        global_state = self.contract.global_state()
-        assert global_state["counter"] == 1
+        assert result.return_value == 1
+        st = client.get_application_state()
+        assert st["counter"] == 1
 
     def test_anyone_can_dec(self):
-        self._setup_counter()
+        client, _ = self._setup_counter()
 
-        self.contract.inc()
+        client.call(CounterApp.inc)
 
-        private_key, address = create_test_account(
-            self.algod_client, self.indexer_client
-        )
-        result = self.contract.dec(caller=address, caller_sk=private_key)
+        result = client.call(CounterApp.dec, sender=self.other.address, signer=self.other.signer)
 
-        assert result == 0
-        global_state = self.contract.global_state()
-        assert global_state["counter"] == 0
+        assert result.return_value == 0
+        st = client.get_application_state()
+        assert st["counter"] == 0
 
     def test_creator_can_delete(self):
-        self._setup_counter()
+        client, _ = self._setup_counter()
 
-        self.contract.delete()
+        client.delete()
         try:
-            self.contract.global_state()
+            client.get_application_state()
             raise Exception("failed to delete application")
         except AlgodHTTPError as e:
             assert e.code == 404
 
     def test_others_cannot_delete(self):
-        self._setup_counter()
-
-        private_key, address = create_test_account(
-            self.algod_client, self.indexer_client
-        )
+        client, _ = self._setup_counter()
         try:
-            self.contract.delete(caller=address, caller_sk=private_key)
+            client.delete(sender=self.other.address, signer=self.other.signer)
             raise Exception("others should not be allowed to remove the application")
-        except AlgodHTTPError as e:
-            assert e.code == 400
-            assert e.args[0].endswith("transaction rejected by ApprovalProgram")
+        except LogicException:
+            pass
 
-    def test_creator_cannot_update(self):
-        self._setup_counter()
+    def test_creator_can_update(self):
+        [_, [app_id, _, _]] = client, _ = self._setup_counter()
+        client = ApplicationClient(self.algod_client, NoopApp(), app_id=app_id, signer=self.creator.signer)
+        client.update()
 
-        always_succeed_program = compile_teal(
-            self.algod_client,
-            """#pragma version 6
-int 0
-return""",
-        )
+    def test_others_cannot_update(self):
+        [_, [app_id, _, _]] = client, _ = self._setup_counter()
+        client = ApplicationClient(self.algod_client, NoopApp(), app_id=app_id, signer=self.creator.signer)
+
         try:
-            self.contract.update(always_succeed_program, always_succeed_program)
+            client.update(sender=self.other.address, signer=self.other.signer)
             raise Exception("application cannot be updated")
-        except AlgodHTTPError as e:
-            assert e.code == 400
-            assert e.args[0].endswith("transaction rejected by ApprovalProgram")
+        except LogicException:
+            pass
 
     def test_underflow(self):
-        self._setup_counter()
+        client, _ = self._setup_counter()
 
-        result = self.contract.dec()
-        assert result == 0
+        result = client.call(CounterApp.dec)
+        assert result.return_value == 0
 
     def test_overflow(self):
         # Enable once PyTeal Router supports app creation with arguments
-        #
         # uint64_max = 0xFFFFFFFFFFFFFFFF
-        # self._setup_counter(start=uint64_max)
+        # client, _ = self._setup_counter(start=uint64_max)
         #
-        # self.contract.inc()
+        # st = client.get_application_state()
+        # assert st["counter"] == uint64_max
+        #
+        # result = client.call(CounterApp.inc)
+        #
+        # assert result.return_value == uint64_max
         pass
 
     def test_inc_and_dec(self):
-        self._setup_counter()
+        client, _ = self._setup_counter()
 
-        result = self.contract.inc()
+        result = client.call(CounterApp.inc)
 
-        assert result == 1
-        global_state = self.contract.global_state()
-        assert global_state["counter"] == 1
+        assert result.return_value == 1
+        st = client.get_application_state()
+        assert st["counter"] == 1
 
-        result = self.contract.dec()
+        result = client.call(CounterApp.dec)
 
-        assert result == 0
-        global_state = self.contract.global_state()
-        assert global_state["counter"] == 0
+        assert result.return_value == 0
+        st = client.get_application_state()
+        assert st["counter"] == 0

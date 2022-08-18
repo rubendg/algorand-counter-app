@@ -1,59 +1,56 @@
+from typing import Final
+
 from pyteal import (
     Expr,
-    Router,
-    Return,
-    Global,
-    Txn,
-    BareCallActions,
-    OnCompleteAction,
-    Approve,
     Seq,
     Int,
-    Reject,
     abi,
-    ScratchVar,
     If,
-    TealType,
+    TealType, Global, Approve
 )
+from beaker import Application, external, ApplicationStateValue, create, delete, Authorize, update
 
-from contract.helper import global_bindings
-
-scratch_count = ScratchVar(TealType.uint64)
-
-is_creator: Expr = Txn.sender() == Global.creator_address()
-
-counter = global_bindings["counter"]  # uint64
-
-on_create: Expr = Seq(counter.set(Int(0)), Approve())
-
-router = Router(
-    name="counter-app",
-    descr="count by increments or decrements of 1",
-    bare_calls=BareCallActions(
-        no_op=OnCompleteAction.create_only(on_create),
-        update_application=OnCompleteAction.always(Reject()),
-        delete_application=OnCompleteAction.always(Return(is_creator)),
-        clear_state=OnCompleteAction.never(),
-    ),
-)
+uint64_max = 0xFFFFFFFFFFFFFFFF
 
 
-@router.method(description="increment the counter")
-def inc(*, output: abi.Uint64) -> Expr:
-    return Seq(
-        scratch_count.store(counter.get()),
-        counter.set(scratch_count.load() + Int(1)),
-        output.set(counter.get()),
+class CounterApp(Application):
+    """A counter for everyone"""
+
+    counter: Final[ApplicationStateValue] = ApplicationStateValue(
+        stack_type=TealType.uint64,
+        descr="A counter",
     )
 
+    @create
+    def create(self):
+        return self.initialize_application_state()
 
-@router.method(description="decrement the counter")
-def dec(*, output: abi.Uint64) -> Expr:
-    return Seq(
-        scratch_count.store(counter.get()),
-        If(
-            cond=scratch_count.load() > Int(0),
-            thenBranch=counter.set(scratch_count.load() - Int(1)),
-        ),
-        output.set(counter.get()),
-    )
+    @delete(authorize=Authorize.only(Global.creator_address()))
+    def delete(self):
+        return Approve()
+
+    @update(authorize=Authorize.only(Global.creator_address()))
+    def update(self):
+        return Approve()
+
+    @external
+    def inc(self, *, output: abi.Uint64) -> Expr:
+        """increment the counter"""
+        return Seq(
+            If(
+                self.counter < Int(uint64_max),
+                self.counter.set(self.counter + Int(1))
+            ),
+            output.set(self.counter),
+        )
+
+    @external
+    def dec(self, *, output: abi.Uint64) -> Expr:
+        """decrement the counter"""
+        return Seq(
+            If(
+                self.counter > Int(0),
+                self.counter.set(self.counter - Int(1)),
+            ),
+            output.set(self.counter),
+        )

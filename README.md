@@ -1,7 +1,7 @@
 # Algorand - Counter Application
 
 This project serves as an **educational** example on how to build, test, and deploy a very basic application on the Algorand blockchain using 
-the [PyTeal](https://github.com/algorand/pyteal) package, and the [Python Algorand SDK](https://github.com/algorand/py-algorand-sdk).
+the [PyTeal](https://pyteal.readthedocs.io/en/stable/), [Beaker](https://github.com/algorand-devrel/beaker) packages, and the [Python Algorand SDK](https://py-algorand-sdk.readthedocs.io/en/latest/).
 
 The demo application maintains a single global variable `counter` which can be incremented or decremented by anyone.
 
@@ -122,6 +122,11 @@ make build
 ```
 
 this will output the ABI along with the Teal approval and clear program in [build](./build).
+
+## Debugging
+
+https://github.com/algorand/go-algorand/blob/master/cmd/tealdbg/README.md
+https://plugins.jetbrains.com/plugin/15300-algodea-algorand-integration
 
 ## Troubleshooting
 

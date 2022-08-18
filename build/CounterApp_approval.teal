@@ -1,0 +1,161 @@
+#pragma version 7
+intcblock 0 1
+bytecblock 0x636f756e746572 0x151f7c75
+txn NumAppArgs
+intc_0 // 0
+==
+bnz main_l6
+txna ApplicationArgs 0
+pushbytes 0x2faaf686 // "dec()uint64"
+==
+bnz main_l5
+txna ApplicationArgs 0
+pushbytes 0xfe9f966b // "inc()uint64"
+==
+bnz main_l4
+err
+main_l4:
+txn OnCompletion
+intc_0 // NoOp
+==
+txn ApplicationID
+intc_0 // 0
+!=
+&&
+assert
+callsub inc_6
+store 1
+bytec_1 // 0x151f7c75
+load 1
+itob
+concat
+log
+intc_1 // 1
+return
+main_l5:
+txn OnCompletion
+intc_0 // NoOp
+==
+txn ApplicationID
+intc_0 // 0
+!=
+&&
+assert
+callsub dec_5
+store 0
+bytec_1 // 0x151f7c75
+load 0
+itob
+concat
+log
+intc_1 // 1
+return
+main_l6:
+txn OnCompletion
+intc_0 // NoOp
+==
+bnz main_l12
+txn OnCompletion
+pushint 4 // UpdateApplication
+==
+bnz main_l11
+txn OnCompletion
+pushint 5 // DeleteApplication
+==
+bnz main_l10
+err
+main_l10:
+txn ApplicationID
+intc_0 // 0
+!=
+assert
+callsub delete_2
+intc_1 // 1
+return
+main_l11:
+txn ApplicationID
+intc_0 // 0
+!=
+assert
+callsub update_4
+intc_1 // 1
+return
+main_l12:
+txn ApplicationID
+intc_0 // 0
+==
+assert
+callsub create_0
+intc_1 // 1
+return
+
+// create
+create_0:
+bytec_0 // "counter"
+intc_0 // 0
+app_global_put
+retsub
+
+// auth_only
+authonly_1:
+global CreatorAddress
+==
+retsub
+
+// delete
+delete_2:
+txn Sender
+callsub authonly_1
+assert
+intc_1 // 1
+return
+
+// auth_only
+authonly_3:
+global CreatorAddress
+==
+retsub
+
+// update
+update_4:
+txn Sender
+callsub authonly_3
+assert
+intc_1 // 1
+return
+
+// dec
+dec_5:
+bytec_0 // "counter"
+app_global_get
+intc_0 // 0
+>
+bz dec_5_l2
+bytec_0 // "counter"
+bytec_0 // "counter"
+app_global_get
+intc_1 // 1
+-
+app_global_put
+dec_5_l2:
+bytec_0 // "counter"
+app_global_get
+retsub
+
+// inc
+inc_6:
+bytec_0 // "counter"
+app_global_get
+pushint 18446744073709551615 // 18446744073709551615
+<
+bz inc_6_l2
+bytec_0 // "counter"
+bytec_0 // "counter"
+app_global_get
+intc_1 // 1
++
+app_global_put
+inc_6_l2:
+bytec_0 // "counter"
+app_global_get
+retsub
