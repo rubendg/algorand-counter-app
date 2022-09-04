@@ -27,7 +27,9 @@ if __name__ == "__main__":
         )
     )
 
-    app_client = ApplicationClient(client, CounterApp(), signer=AccountTransactionSigner(pk))
+    app_client = ApplicationClient(
+        client, CounterApp(), signer=AccountTransactionSigner(pk)
+    )
     app_id, app_address, tx_id = app_client.create()
 
     print(

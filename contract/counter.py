@@ -1,14 +1,15 @@
 from typing import Final
 
-from pyteal import (
-    Expr,
-    Seq,
-    Int,
-    abi,
-    If,
-    TealType, Global, Approve
+from pyteal import Expr, Seq, Int, abi, If, TealType, Global, Approve
+from beaker import (
+    Application,
+    external,
+    ApplicationStateValue,
+    create,
+    delete,
+    Authorize,
+    update,
 )
-from beaker import Application, external, ApplicationStateValue, create, delete, Authorize, update
 
 uint64_max = 0xFFFFFFFFFFFFFFFF
 
@@ -40,10 +41,7 @@ class CounterApp(Application):
     def inc(self, *, output: abi.Uint64) -> Expr:
         """increment the counter"""
         return Seq(
-            If(
-                self.counter < Int(uint64_max),
-                self.counter.set(self.counter + Int(1))
-            ),
+            If(self.counter < Int(uint64_max), self.counter.set(self.counter + Int(1))),
             output.set(self.counter),
         )
 

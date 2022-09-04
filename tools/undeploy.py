@@ -30,7 +30,9 @@ if __name__ == "__main__":
         )
     )
 
-    app_client = ApplicationClient(client, CounterApp(), app_id=app_id, signer=AccountTransactionSigner(pk))
+    app_client = ApplicationClient(
+        client, CounterApp(), app_id=app_id, signer=AccountTransactionSigner(pk)
+    )
     tx_id = app_client.delete()
 
     print("Removed application in tx_id:{0}".format(tx_id))
