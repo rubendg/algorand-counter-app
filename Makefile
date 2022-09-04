@@ -37,7 +37,7 @@ integration-test: build
 		python -m pytest -n ${TEST_PARALLELISM} -s -v tests/ \
 	)
 
-deploy:
+deploy: build
 	 @python tools/deploy.py $(NETWORK)
 
 undeploy:

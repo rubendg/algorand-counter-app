@@ -21,6 +21,9 @@ class CounterApp(Application):
         descr="A counter",
     )
 
+    def __init__(self):
+        super().__init__(version=6)
+
     @create
     def create(self):
         return self.initialize_application_state()

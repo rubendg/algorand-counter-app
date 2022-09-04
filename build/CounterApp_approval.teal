@@ -1,4 +1,4 @@
-#pragma version 7
+#pragma version 6
 intcblock 0 1
 bytecblock 0x636f756e746572 0x151f7c75
 txn NumAppArgs
@@ -6,11 +6,11 @@ intc_0 // 0
 ==
 bnz main_l6
 txna ApplicationArgs 0
-pushbytes 0x2faaf686 // "dec()uint64"
+pushbytes 0xfe9f966b // "inc()uint64"
 ==
 bnz main_l5
 txna ApplicationArgs 0
-pushbytes 0xfe9f966b // "inc()uint64"
+pushbytes 0x2faaf686 // "dec()uint64"
 ==
 bnz main_l4
 err
@@ -23,7 +23,7 @@ intc_0 // 0
 !=
 &&
 assert
-callsub inc_6
+callsub dec_6
 store 1
 bytec_1 // 0x151f7c75
 load 1
@@ -41,7 +41,7 @@ intc_0 // 0
 !=
 &&
 assert
-callsub dec_5
+callsub inc_5
 store 0
 bytec_1 // 0x151f7c75
 load 0
@@ -124,38 +124,38 @@ assert
 intc_1 // 1
 return
 
-// dec
-dec_5:
-bytec_0 // "counter"
-app_global_get
-intc_0 // 0
->
-bz dec_5_l2
-bytec_0 // "counter"
-bytec_0 // "counter"
-app_global_get
-intc_1 // 1
--
-app_global_put
-dec_5_l2:
-bytec_0 // "counter"
-app_global_get
-retsub
-
 // inc
-inc_6:
+inc_5:
 bytec_0 // "counter"
 app_global_get
 pushint 18446744073709551615 // 18446744073709551615
 <
-bz inc_6_l2
+bz inc_5_l2
 bytec_0 // "counter"
 bytec_0 // "counter"
 app_global_get
 intc_1 // 1
 +
 app_global_put
-inc_6_l2:
+inc_5_l2:
+bytec_0 // "counter"
+app_global_get
+retsub
+
+// dec
+dec_6:
+bytec_0 // "counter"
+app_global_get
+intc_0 // 0
+>
+bz dec_6_l2
+bytec_0 // "counter"
+bytec_0 // "counter"
+app_global_get
+intc_1 // 1
+-
+app_global_put
+dec_6_l2:
 bytec_0 // "counter"
 app_global_get
 retsub

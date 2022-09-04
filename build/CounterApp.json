@@ -2,20 +2,20 @@
     "name": "CounterApp",
     "methods": [
         {
-            "name": "dec",
-            "args": [],
-            "returns": {
-                "type": "uint64"
-            },
-            "desc": "decrement the counter"
-        },
-        {
             "name": "inc",
             "args": [],
             "returns": {
                 "type": "uint64"
             },
             "desc": "increment the counter"
+        },
+        {
+            "name": "dec",
+            "args": [],
+            "returns": {
+                "type": "uint64"
+            },
+            "desc": "decrement the counter"
         }
     ],
     "desc": "A counter for everyone",
