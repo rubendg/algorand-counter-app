@@ -4,14 +4,14 @@ from beaker.client import ApplicationClient, LogicException
 from algosdk.error import AlgodHTTPError
 
 from contract.counter import CounterApp
-from tests.helpers import call_sandbox_command
+# from tests.helpers import call_sandbox_command
 
 sandbox_dev_token = "a" * 64
 
 
 def setup_module(module):
     """Ensure Algorand Sandbox is up prior to running tests from this module."""
-    call_sandbox_command("up", "dev")
+    # call_sandbox_command("up", "dev")
 
 
 class NoopApp(Application):

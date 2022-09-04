@@ -1,4 +1,6 @@
 attrs==22.1.0
+Beaker==1.11.0
+beaker-pyteal==0.1.0a0
 black==22.6.0
 cffi==1.15.1
 click==8.1.3

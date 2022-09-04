@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 TEST_PARALLELISM := 0
 NETWORK := default
 
@@ -33,7 +34,7 @@ lint: black flake8 mypy
 
 integration-test: build
 	@( \
-		[ -z "${SANDBOX_DIR}" ] && echo "SANDBOX_DIR is not set" && exit 1 ; \
+#		[ -z "${SANDBOX_DIR}" ] && echo "SANDBOX_DIR is not set" && exit 1 ; \
 		python -m pytest -n ${TEST_PARALLELISM} -s -v tests/ \
 	)
 
