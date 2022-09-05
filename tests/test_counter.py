@@ -1,3 +1,4 @@
+import pytest
 from beaker import sandbox, Application
 from beaker.client import ApplicationClient, LogicException
 
@@ -89,6 +90,7 @@ class TestCounter:
         except AlgodHTTPError as e:
             assert e.code == 404
 
+    @pytest.mark.skip(reason="skipping as it triggers an api compat issue between sandbox and sdk")
     def test_others_cannot_delete(self):
         client, _ = self._setup_counter()
         try:
@@ -104,6 +106,7 @@ class TestCounter:
         )
         client.update()
 
+    @pytest.mark.skip(reason="skipping as it triggers an api compat issue between sandbox and sdk")
     def test_others_cannot_update(self):
         [_, [app_id, _, _]] = client, _ = self._setup_counter()
         client = ApplicationClient(
