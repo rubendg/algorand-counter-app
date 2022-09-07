@@ -1,0 +1,29 @@
+name: Build, Test, and Deploy Frontend
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: install
+        run: npm ci
+        working-directory: ./frontend
+      - name: test
+        run: npm test
+        working-directory: ./frontend
+      - name: build
+        run: PUBLIC_URL="." npm run build
+        working-directory: ./frontend
+      - name: deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: ./frontend/build

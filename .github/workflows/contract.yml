@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-contract:
+  build-and-test-contract:
     runs-on: ubuntu-latest
     steps:
       - run: |
