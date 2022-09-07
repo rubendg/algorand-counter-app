@@ -2,7 +2,7 @@ import React, {Dispatch, SetStateAction, useContext, useEffect, useState,} from 
 import './App.css';
 import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import {WalletConnectContext} from "./walletconnect/WalletConnect";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {HashRouter, Route, Routes} from "react-router-dom";
 import {Header} from "./Header";
 import {ConnectWalletRoute} from "./ConnectWalletRoute";
 import {CounterManagementRoute} from "./CounterManagementRoute";
@@ -94,7 +94,7 @@ function App() {
 
     return (
         <WalletConnectContext.Provider value={connector}>
-            <BrowserRouter>
+            <HashRouter>
                 <Header appState={walletConnectionState} onDisconnect={disconnect}>
                     <Routes>
                         <Route path="/" element={<ConnectWalletRoute walletConnectionState={walletConnectionState} onConnect={connect} updateAppState={setWalletConnectionState}/>}/>
@@ -102,7 +102,7 @@ function App() {
                         <Route path="/counter/:appID" element={<CounterRoute walletConnectionState={walletConnectionState}/>}/>
                     </Routes>
                 </Header>
-            </BrowserRouter>
+            </HashRouter>
         </WalletConnectContext.Provider>
     );
 }
