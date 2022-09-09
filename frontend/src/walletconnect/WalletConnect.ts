@@ -2,7 +2,7 @@ import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import WalletConnect from "@walletconnect/client";
 import {createContext} from "react";
 import {formatJsonRpcRequest, JsonRpcRequest} from "@json-rpc-tools/utils";
-import {encodeUnsignedTransaction, TransactionSigner} from "algosdk";
+import {encodeUnsignedTransaction, Transaction, TransactionSigner} from "algosdk";
 import {SignTxnParams, WalletTransaction} from "./spec";
 import {uint8ArrayFromBase64} from "../helpers";
 
@@ -18,6 +18,10 @@ function algoSignTxn(requestParams: SignTxnParams, id?: number | undefined): Jso
     return formatJsonRpcRequest("algo_signTxn", requestParams, id)
 }
 
+function txnToBase64(txn: Transaction): string {
+    return Buffer.from(encodeUnsignedTransaction(txn)).toString("base64")
+}
+
 // Records the need for a WalletConnect signer instance: https://github.com/algorand/js-algorand-sdk/issues/411
 export function WalletConnectSigner(wc: WalletConnect, account: string, message: string): TransactionSigner {
     let requestID = 0
@@ -26,10 +30,8 @@ export function WalletConnectSigner(wc: WalletConnect, account: string, message:
         for (const i of indexesToSign) {
             const txn = txnGroup[i]
 
-            const encodedTxn = Buffer.from(encodeUnsignedTransaction(txn)).toString("base64")
-
             txnsToBeSigned.push({
-                txn: encodedTxn,
+                txn: txnToBase64(txn),
                 message: message,
             })
         }

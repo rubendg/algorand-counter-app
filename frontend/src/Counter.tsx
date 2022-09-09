@@ -12,11 +12,10 @@ interface Props {
     account: string,
     client: Algodv2,
     appID: number,
-    initialCount: bigint,
-    creator: string
+    initialCount: bigint
 }
 
-export function Counter({ account, client, appID, initialCount, creator }: Props) {
+export function Counter({ account, client, appID, initialCount }: Props) {
     const [count, setCounter] = useState(initialCount)
     const [pending, withPending] = usePendingState()
 
@@ -33,12 +32,6 @@ export function Counter({ account, client, appID, initialCount, creator }: Props
         setCounter(await counter.dec())
     })
 
-    const del = async () => {
-        // todo
-        // const sp = await client.getTransactionParams().do()
-        // const tx = makeApplicationDeleteTxn(account, sp, appID)
-    }
-
     return (
         <Pending pending={pending}>
             <Stack>
@@ -46,7 +39,6 @@ export function Counter({ account, client, appID, initialCount, creator }: Props
                 <ButtonGroup variant="outlined" aria-label="text button group" style={{display: "flex", justifyContent: "center"}}>
                     <Button onClick={increase}>Increase</Button>
                     <Button onClick={decrease}>Decrease</Button>
-                    <Button onClick={del} disabled={creator !== account}>Delete</Button>
                 </ButtonGroup>
             </Stack>
         </Pending>

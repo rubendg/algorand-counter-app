@@ -40,7 +40,7 @@ def parse_deployment_config(network, deployment_config="deploy.ini"):
     if sender_mnemonic is None:
         raise Exception(
             "Please set 'sender_mnemonic' to the Algorand account that creates the "
-            "smart contract."
+            "smart application."
         )
 
     algod_address = config.get(network, "algod_address")

@@ -5,14 +5,8 @@ from beaker.client import ApplicationClient, LogicException
 from algosdk.error import AlgodHTTPError
 
 from contract.counter import CounterApp
-# from tests.helpers import call_sandbox_command
 
 sandbox_dev_token = "a" * 64
-
-
-def setup_module(module):
-    """Ensure Algorand Sandbox is up prior to running tests from this module."""
-    # call_sandbox_command("up", "dev")
 
 
 class NoopApp(Application):
@@ -90,7 +84,9 @@ class TestCounter:
         except AlgodHTTPError as e:
             assert e.code == 404
 
-    @pytest.mark.skip(reason="skipping as it triggers an api compat issue between sandbox and sdk")
+    @pytest.mark.skip(
+        reason="skipping as it triggers an api compat issue between sandbox and sdk"
+    )
     def test_others_cannot_delete(self):
         client, _ = self._setup_counter()
         try:
@@ -106,7 +102,9 @@ class TestCounter:
         )
         client.update()
 
-    @pytest.mark.skip(reason="skipping as it triggers an api compat issue between sandbox and sdk")
+    @pytest.mark.skip(
+        reason="skipping as it triggers an api compat issue between sandbox and sdk"
+    )
     def test_others_cannot_update(self):
         [_, [app_id, _, _]] = client, _ = self._setup_counter()
         client = ApplicationClient(

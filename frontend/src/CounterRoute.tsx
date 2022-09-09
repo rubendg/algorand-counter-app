@@ -56,7 +56,7 @@ export function CounterRoute({ walletConnectionState }: Props) {
                 <Link to={"/counter"}>Back</Link> / Application: <a href={applicationExplorer(walletConnectionState.network, parsedAppID)} target="_blank" rel="noreferrer">{appID}</a>
             </div>
             {error && <Alert severity="error" style={{marginBottom:10}}>{error}</Alert>}
-            {!error && walletConnectionState.account && appInfo && <Counter account={walletConnectionState.account} client={client} appID={parsedAppID} initialCount={appInfo.count} creator={appInfo.creator}/>}
+            {!error && walletConnectionState.account && appInfo && <Counter account={walletConnectionState.account} client={client} appID={parsedAppID} initialCount={appInfo.count} />}
         </Stack>
     )
 }

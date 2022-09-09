@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test-contract:
+  build-and-test-backend:
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -24,11 +24,14 @@ jobs:
           python-version: '3.10.4'
           cache: 'pip'
       - name: install dependencies
+        working-directory: ./backend
         run: |
           make setup-venv setup
       - name: lint
+        working-directory: ./backend
         run: source venv/bin/activate ; make lint
       - name: build
+        working-directory: ./backend
         run: source venv/bin/activate ; make build
       - name: Check cache for Docker layers
         uses: satackey/action-docker-layer-caching@v0.0.11
@@ -42,6 +45,7 @@ jobs:
         with:
           config: dev
       - name: integration test
+        working-directory: ./backend
         run: |
           source venv/bin/activate
           make integration-test
@@ -49,7 +53,7 @@ jobs:
   build-and-deploy-frontend:
     runs-on: ubuntu-latest
     needs:
-      - build-and-test-contract
+      - build-and-test-backend
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

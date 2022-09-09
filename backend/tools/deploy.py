@@ -22,7 +22,7 @@ if __name__ == "__main__":
     versions = client.versions()
 
     print(
-        "Deploying application to {0}@{1} from account:{2} ...".format(
+        "Deploying backend to {0}@{1} from account:{2} ...".format(
             network, client.algod_address, address
         )
     )
@@ -33,11 +33,11 @@ if __name__ == "__main__":
     app_id, app_address, tx_id = app_client.create()
 
     print(
-        "Application deployed on application address:{0} with app_id:{1} in tx:{2}".format(
+        "Application deployed on backend address:{0} with app_id:{1} in tx:{2}".format(
             app_address, app_id, tx_id
         )
     )
 
     url = view_application_url(versions["genesis_id"], app_id)
     if url is not None:
-        print("View application at: {}".format(url))
+        print("View backend at: {}".format(url))

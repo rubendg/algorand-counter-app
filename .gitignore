@@ -6,5 +6,5 @@ __pycache__
 *.code-workspace
 .mypy_cache
 .idea
-deploy.ini
+backend/deploy.ini
 .*.md

@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Backdrop, CircularProgress} from "@mui/material";
 
-export function uint8ArrayFromBase64(e: string) {
+export function uint8ArrayFromBase64(e: string): Uint8Array {
     return new Uint8Array(Buffer.from(e, "base64"))
 }
 

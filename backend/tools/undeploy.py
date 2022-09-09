@@ -7,7 +7,11 @@ from beaker.client import ApplicationClient
 sys.path.append(os.getcwd())
 
 if __name__ == "__main__":
-    from tools.helpers import parse_deployment_config, algod_client, view_tx_url
+    from tools.helpers import (
+        parse_deployment_config,
+        algod_client,
+        view_tx_url,
+    )
     from contract.counter import CounterApp
 
     if len(sys.argv) < 2:
@@ -25,7 +29,7 @@ if __name__ == "__main__":
     versions = client.versions()
 
     print(
-        "Removing application:{0} at {1}@{2} using account:{3} ...".format(
+        "Removing backend:{0} at {1}@{2} using account:{3} ...".format(
             app_id, network, client.algod_address, address
         )
     )
@@ -35,7 +39,7 @@ if __name__ == "__main__":
     )
     tx_id = app_client.delete()
 
-    print("Removed application in tx_id:{0}".format(tx_id))
+    print("Removed backend in tx_id:{0}".format(tx_id))
 
     url = view_tx_url(versions["genesis_id"], tx_id)
     if url is not None:
