@@ -4,6 +4,7 @@ import {createContext} from "react";
 import {formatJsonRpcRequest, JsonRpcRequest} from "@json-rpc-tools/utils";
 import {encodeUnsignedTransaction, TransactionSigner} from "algosdk";
 import {SignTxnParams, WalletTransaction} from "./spec";
+import {uint8ArrayFromBase64} from "../helpers";
 
 const connectProps = {
     bridge: "https://bridge.walletconnect.org",
@@ -37,7 +38,7 @@ export function WalletConnectSigner(wc: WalletConnect, account: string, message:
         const result: Array<string | null> = await wc.sendCustomRequest(request)
 
         const decodedResult = result.map(element => {
-            return element ? new Uint8Array(Buffer.from(element, "base64")) : null
+            return element ? uint8ArrayFromBase64(element) : null
         })
 
         return decodedResult.filter(e => e !== null) as Uint8Array[]

@@ -52,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "raw.macro": "^0.6.2",
     "react-app-rewired": "^2.2.1"
   }
 }

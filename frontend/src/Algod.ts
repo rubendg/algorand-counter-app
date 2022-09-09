@@ -10,14 +10,14 @@ export enum Network {
     LocalNet = "localnet"
 }
 
-export const accountExplorer = (network: Network, account: string) => {
-    let base;
+const explorer = (network: Network) => {
+    let base
     switch (network) {
         case Network.MainNet:
-            base = 'https://algoexplorer.io/address'
+            base = 'https://algoexplorer.io'
             break
         case Network.TestNet:
-            base = 'https://testnet.algoexplorer.io/address'
+            base = 'https://testnet.algoexplorer.io'
             break
         case Network.LocalNet:
             base = "http://localhost:4001"
@@ -25,7 +25,15 @@ export const accountExplorer = (network: Network, account: string) => {
         default:
             throw new Error(`Unknown network type: ${network}`);
     }
-    return `${base}/${account}`;
+    return base
+}
+
+export const accountExplorer = (network: Network, account: string) => {
+    return `${explorer(network)}/address/${account}`;
+}
+
+export const applicationExplorer = (network: Network, appID: number) => {
+    return `${explorer(network)}/application/${appID}`;
 }
 
 export function clientForNetwork(network: Network): Algodv2 {

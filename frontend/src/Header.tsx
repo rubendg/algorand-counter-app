@@ -34,7 +34,7 @@ export function Header({ appState, onDisconnect, children }: Props) {
             <Stack>
                 <div style={{textAlign:'left', verticalAlign:'middle'}}><h1>Algorand Counter App</h1></div>
                 {header}
-                <Box boxShadow={3} minWidth="50vw" style={{padding:10}}>
+                <Box boxShadow={3} minWidth="50vw" style={{padding:10, paddingBottom: 20}}>
                     {children}
                 </Box>
             </Stack>

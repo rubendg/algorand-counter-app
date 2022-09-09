@@ -1,7 +1,7 @@
 import {WalletConnectionState} from "./types";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {clientForNetwork} from "./Algod";
+import {applicationExplorer, clientForNetwork} from "./Algod";
 import {Alert, Stack} from "@mui/material";
 import {Counter} from "./Counter";
 import {fetchApplicationInfo, UnexpectedApplication} from "./CounterContract";
@@ -51,8 +51,10 @@ export function CounterRoute({ walletConnectionState }: Props) {
     }, [parsedAppID, client])
 
     return (
-        <Stack>
-            <Link to={"/counter"}>Back</Link><br/>
+        <Stack rowGap={1}>
+            <div>
+                <Link to={"/counter"}>Back</Link> / Application: <a href={applicationExplorer(walletConnectionState.network, parsedAppID)} target="_blank" rel="noreferrer">{appID}</a>
+            </div>
             {error && <Alert severity="error" style={{marginBottom:10}}>{error}</Alert>}
             {!error && walletConnectionState.account && appInfo && <Counter account={walletConnectionState.account} client={client} appID={parsedAppID} initialCount={appInfo.count} creator={appInfo.creator}/>}
         </Stack>

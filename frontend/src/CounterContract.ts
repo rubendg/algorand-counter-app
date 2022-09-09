@@ -1,13 +1,43 @@
-import {ABIMethod, Algodv2, AtomicTransactionComposer, TransactionSigner} from "algosdk";
+import {
+    ABIMethod,
+    Algodv2,
+    AtomicTransactionComposer,
+    makeApplicationCreateTxn,
+    OnApplicationComplete,
+    TransactionSigner, waitForConfirmation
+} from "algosdk";
+import raw from "raw.macro";
+import {uint8ArrayFromBase64} from "./helpers";
 
 export class CounterContract {
-    static approvalProgram = 'BiACAAEmAgdjb3VudGVyBBUffHUxGyISQABJNhoAgAQvqvaGEkAAJTYaAIAE/p+WaxJAAAEAMRkiEjEYIhMQRIgAgzUBKTQBFlCwI0MxGSISMRgiExBEiABcNQApNAAWULAjQzEZIhJAACUxGYEEEkAAEzEZgQUSQAABADEYIhNEiAAeI0MxGCITRIgAICNDMRgiEkSIAAIjQygiZ4kyCRKJMQCI//dEI0MyCRKJMQCI//dEI0MoZCINQQAGKChkIwlnKGSJKGSB////////////AQxBAAYoKGQjCGcoZIk='
-    static clearProgram = 'BoEAQw=='
+    private static contract: { approvalProgram: string, clearProgram: string } = JSON.parse(raw('../contract.json'))
+
+    static approvalProgram = this.contract.approvalProgram
+    static clearProgram = this.contract.clearProgram
 
     client: Algodv2
     appID: number
     sender: string
     signer: TransactionSigner
+
+    static async create(client: Algodv2, sender: string, signer: TransactionSigner) {
+        const sp = await client.getTransactionParams().do()
+
+        const numLocalInts = 0
+        const numLocalByteSlices = 0
+        const numGlobalByteSlices = 1
+        const numGlobalInts = 1
+
+        const [signedTx] = await signer(
+            [makeApplicationCreateTxn(sender, sp, OnApplicationComplete.NoOpOC, uint8ArrayFromBase64(this.approvalProgram), uint8ArrayFromBase64(this.clearProgram), numLocalInts, numLocalByteSlices, numGlobalInts, numGlobalByteSlices)],
+            [0]
+        )
+
+        const { txId } = await client.sendRawTransaction(signedTx).do()
+        const completedTx = await waitForConfirmation(client, txId, 2)
+
+        return completedTx['application-index']
+    }
 
     constructor(client: Algodv2, appID: number, sender: string, signer: TransactionSigner) {
         this.client = client

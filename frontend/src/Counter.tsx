@@ -1,29 +1,12 @@
 import React, {useContext, useState} from "react";
-import {Backdrop, Button, ButtonGroup, CircularProgress, Stack} from "@mui/material";
+import {Button, ButtonGroup, Stack} from "@mui/material";
 import {WalletConnectContext, WalletConnectSigner} from "./walletconnect/WalletConnect";
 import {
     Algodv2,
 } from "algosdk";
 import {CounterContract} from "./CounterContract";
+import {Pending, usePendingState} from "./helpers";
 
-function usePendingState(): [boolean, (f: () => Promise<void>) => (() => Promise<void>)] {
-    const [pending, setPending] = useState(false)
-
-    const withPending = (f: () => Promise<void>) => {
-        return async () => {
-            setPending(true)
-            try {
-                return await f()
-            } catch (e) {
-                throw e
-            } finally {
-                setPending(false)
-            }
-        }
-    }
-
-    return [pending, withPending]
-}
 
 interface Props {
     account: string,
@@ -57,18 +40,15 @@ export function Counter({ account, client, appID, initialCount, creator }: Props
     }
 
     return (
-        <Stack direction="row">
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={pending}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
-            <ButtonGroup variant="outlined" aria-label="text button group">
-                <div style={{paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, textAlign: 'center'}}>Count: {count.toString(10)}</div>
-                <Button onClick={increase}>Increase</Button>
-                <Button onClick={decrease}>Decrease</Button>
-                <Button onClick={del} disabled={creator !== account}>Delete</Button>
-            </ButtonGroup>
-        </Stack>
+        <Pending pending={pending}>
+            <Stack>
+                <div style={{paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, textAlign: 'center'}}><h1>Count: {count.toString(10)}</h1></div>
+                <ButtonGroup variant="outlined" aria-label="text button group" style={{display: "flex", justifyContent: "center"}}>
+                    <Button onClick={increase}>Increase</Button>
+                    <Button onClick={decrease}>Decrease</Button>
+                    <Button onClick={del} disabled={creator !== account}>Delete</Button>
+                </ButtonGroup>
+            </Stack>
+        </Pending>
     )
 }
