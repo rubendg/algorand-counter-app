@@ -1,7 +1,11 @@
+import base64
 import configparser
 
 import algosdk
+from algosdk.atomic_transaction_composer import AtomicTransactionComposer, TransactionWithSigner, TransactionSigner
+from algosdk.future import transaction
 from algosdk.v2client.algod import AlgodClient
+from algosdk.logic import get_application_address
 
 ALGOEXPLORER_TESTNET_ENDPOINT = "https://testnet.algoexplorer.io"
 ALGOEXPLORER_BETANET_ENDPOINT = "https://betanet.algoexplorer.io"
@@ -61,3 +65,43 @@ def algod_client(algod_address, algod_token):
     if algod_address.find("purestake.io") != -1:
         headers = {"X-API-Key": algod_token}
     return AlgodClient(algod_token, algod_address, headers)
+
+
+def deploy_from_descriptor(client: AlgodClient, creator: str, signer: TransactionSigner, descriptor):
+    sp = client.suggested_params()
+
+    resp = client.compile(descriptor['teal']['approval'])
+    approval = base64.b64decode(resp["result"])
+
+    resp = client.compile(descriptor['teal']['clear'])
+    clear = base64.b64decode(resp["result"])
+
+    atc = AtomicTransactionComposer()
+    atc.add_transaction(
+        TransactionWithSigner(
+            txn=transaction.ApplicationCreateTxn(
+                sender=creator,
+                sp=sp,
+                on_complete=transaction.OnComplete.NoOpOC,
+                approval_program=approval,
+                clear_program=clear,
+                global_schema=transaction.StateSchema(num_uints=descriptor['state']['global']['uints'],
+                                                      num_byte_slices=descriptor['state']['global']['byte_slices']),
+                local_schema=transaction.StateSchema(num_uints=descriptor['state']['local']['uints'],
+                                                     num_byte_slices=descriptor['state']['local']['byte_slices']),
+                extra_pages=None,
+                app_args=[],
+            ),
+            signer=signer,
+        )
+    )
+
+    create_result = atc.execute(client, 4)
+
+    create_txid = create_result.tx_ids[0]
+
+    result = client.pending_transaction_info(create_txid)
+    app_id = result["application-index"]
+    app_addr = get_application_address(app_id)
+
+    return app_id, app_addr, create_txid

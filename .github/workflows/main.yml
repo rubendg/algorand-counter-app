@@ -14,8 +14,12 @@ on:
 jobs:
   build-and-test-backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
-      - run: |
+      - working-directory: .
+        run: |
           sudo apt-get update
           sudo apt-get install curl
       - uses: actions/checkout@v3
@@ -24,14 +28,11 @@ jobs:
           python-version: '3.10.4'
           cache: 'pip'
       - name: install dependencies
-        working-directory: ./backend
         run: |
           make setup-venv setup
       - name: lint
-        working-directory: ./backend
         run: source venv/bin/activate ; make lint
       - name: build
-        working-directory: ./backend
         run: source venv/bin/activate ; make build
       - name: Check cache for Docker layers
         uses: satackey/action-docker-layer-caching@v0.0.11
@@ -45,15 +46,67 @@ jobs:
         with:
           config: dev
       - name: integration test
-        working-directory: ./backend
         run: |
           source venv/bin/activate
           make integration-test
+      - name: zip artifact
+        run: zip release.zip ./build -r
+      - uses: actions/upload-artifact@master
+        with:
+          name: release-artifact
+          path: backend/release.zip
+
+  deploy-testnet:
+    runs-on: ubuntu-latest
+    environment: testnet
+    concurrency: testnet
+    defaults:
+      run:
+        working-directory: ./backend
+    needs:
+      - build-and-test-backend
+    steps:
+      - working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install curl
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10.4'
+          cache: 'pip'
+      - name: install dependencies
+        run: |
+          make setup-venv setup
+      - uses: actions/download-artifact@master
+        with:
+          name: release-artifact
+          path: ./backend
+      - name: Display structure of downloaded files
+        run: ls
+      - name: unzip artifact
+        run: unzip release.zip
+      - name: Display structure of downloaded files
+        run: ls
+      - name: deploy to testnet
+        env:
+          SENDER_MNEMONIC: ${{ secrets.SENDER_MNEMONIC }}
+        run: |
+          source venv/bin/activate
+          cat <<EOF > deploy.ini
+          [testnet-algoexplorer]
+          sender_mnemonic= ${SENDER_MNEMONIC}
+          algod_address=https://node.testnet.algoexplorerapi.io
+          EOF
+          python tools/deploy.py --network=testnet-algoexplorer --descriptor ./build/deployment.json
 
   build-and-deploy-frontend:
     runs-on: ubuntu-latest
     needs:
       - build-and-test-backend
+    defaults:
+      run:
+        working-directory: ./frontend
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -61,15 +114,12 @@ jobs:
           node-version: 18
       - name: install
         run: npm ci
-        working-directory: ./frontend
       - name: test
         run: npm test
-        working-directory: ./frontend
       - name: build
         run: PUBLIC_URL="." npm run build
-        working-directory: ./frontend
-      - name: deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: ./frontend/build
+#      - name: deploy
+#        uses: JamesIves/github-pages-deploy-action@v4
+#        with:
+#          branch: gh-pages
+#          folder: ./frontend/build

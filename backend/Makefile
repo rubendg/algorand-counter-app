@@ -39,7 +39,7 @@ integration-test: build
 	)
 
 deploy: build
-	 @python tools/deploy.py $(NETWORK)
+	 @python tools/deploy.py --network $(NETWORK)
 
 undeploy:
 	@( \
