@@ -20,6 +20,8 @@ First, clone the Algorand Sandbox, which will be used to locally deploy and test
 
 ```bash
 git clone https://github.com/algorand/sandbox
+cd sandbox
+./sandbox dev up
 ```
 
 Then, clone this repo:
@@ -116,8 +118,10 @@ this will output the ABI along with the Teal approval and clear program in [buil
 
 ## Debugging
 
-https://github.com/algorand/go-algorand/blob/master/cmd/tealdbg/README.md
-https://plugins.jetbrains.com/plugin/15300-algodea-algorand-integration
+- Visualize the local blockchain interaction by connecting the local node to the [dAppFlow](https://app.dappflow.org/) block explorer
+- Teal debugging
+  - https://github.com/algorand/go-algorand/blob/master/cmd/tealdbg/README.md
+  - https://plugins.jetbrains.com/plugin/15300-algodea-algorand-integration
 
 ## Troubleshooting
 

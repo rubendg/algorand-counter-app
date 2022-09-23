@@ -2,7 +2,11 @@ import base64
 import configparser
 
 import algosdk
-from algosdk.atomic_transaction_composer import AtomicTransactionComposer, TransactionWithSigner, TransactionSigner
+from algosdk.atomic_transaction_composer import (
+    AtomicTransactionComposer,
+    TransactionWithSigner,
+    TransactionSigner,
+)
 from algosdk.future import transaction
 from algosdk.v2client.algod import AlgodClient
 from algosdk.logic import get_application_address
@@ -67,13 +71,15 @@ def algod_client(algod_address, algod_token):
     return AlgodClient(algod_token, algod_address, headers)
 
 
-def deploy_from_descriptor(client: AlgodClient, creator: str, signer: TransactionSigner, descriptor):
+def deploy_from_descriptor(
+    client: AlgodClient, creator: str, signer: TransactionSigner, descriptor
+):
     sp = client.suggested_params()
 
-    resp = client.compile(descriptor['teal']['approval'])
+    resp = client.compile(descriptor["teal"]["approval"])
     approval = base64.b64decode(resp["result"])
 
-    resp = client.compile(descriptor['teal']['clear'])
+    resp = client.compile(descriptor["teal"]["clear"])
     clear = base64.b64decode(resp["result"])
 
     atc = AtomicTransactionComposer()
@@ -85,10 +91,14 @@ def deploy_from_descriptor(client: AlgodClient, creator: str, signer: Transactio
                 on_complete=transaction.OnComplete.NoOpOC,
                 approval_program=approval,
                 clear_program=clear,
-                global_schema=transaction.StateSchema(num_uints=descriptor['state']['global']['uints'],
-                                                      num_byte_slices=descriptor['state']['global']['byte_slices']),
-                local_schema=transaction.StateSchema(num_uints=descriptor['state']['local']['uints'],
-                                                     num_byte_slices=descriptor['state']['local']['byte_slices']),
+                global_schema=transaction.StateSchema(
+                    num_uints=descriptor["state"]["global"]["uints"],
+                    num_byte_slices=descriptor["state"]["global"]["byte_slices"],
+                ),
+                local_schema=transaction.StateSchema(
+                    num_uints=descriptor["state"]["local"]["uints"],
+                    num_byte_slices=descriptor["state"]["local"]["byte_slices"],
+                ),
                 extra_pages=None,
                 app_args=[],
             ),

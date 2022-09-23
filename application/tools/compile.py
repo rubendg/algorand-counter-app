@@ -17,28 +17,28 @@ if __name__ == "__main__":
     deployment_descriptor_out = "{0}/deployment.json".format(output_dir)
 
     deployment_descriptor = {
-        'teal': {
-            'approval': app.approval_program,
-            'clear': app.clear_program,
+        "teal": {
+            "approval": app.approval_program,
+            "clear": app.clear_program,
         },
-        'state': {
-            'global': {
-                'uints': app.app_state.schema().num_uints,
-                'byte_slices': app.app_state.schema().num_byte_slices,
+        "state": {
+            "global": {
+                "uints": app.app_state.schema().num_uints,
+                "byte_slices": app.app_state.schema().num_byte_slices,
             },
-            'local': {
-                'uints': app.acct_state.schema().num_uints,
-                'byte_slices': app.acct_state.schema().num_byte_slices,
+            "local": {
+                "uints": app.acct_state.schema().num_uints,
+                "byte_slices": app.acct_state.schema().num_byte_slices,
             },
         },
-        'abi': app.contract.dictify()
+        "abi": app.contract.dictify(),
     }
 
     with open(approval_out, "w") as h:
-        h.write(app.approval_program)
+        h.write(str(app.approval_program))
 
     with open(clear_out, "w") as h:
-        h.write(app.clear_program)
+        h.write(str(app.clear_program))
 
     with open(abi_out, "w") as h:
         h.write(json.dumps(app.contract.dictify(), indent=4))
