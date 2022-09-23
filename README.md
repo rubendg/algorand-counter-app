@@ -11,5 +11,5 @@ Try it out:
 
 ## Project Layout
 
-- [`backend`](./backend), contains the application written in PyTeal and some convenience tools for compilation and deployment
-- [`frontend`](./frontend), contains a React web frontend for interacting with the application
+- [`application`](./application), contains the application written in PyTeal and some convenience tools for compilation and deployment
+- [`client`](./client), contains a React web frontend for interacting with the application

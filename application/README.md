@@ -31,7 +31,7 @@ git clone https://github.com/rubendg/algorand-counter-app
 Initialize the project and its dependencies by running:
 
 ```bash
-make setup-venv setup
+make setup
 
 # activate virtual env
 source venv/bin/activate
@@ -42,12 +42,6 @@ This should leave you with a proper Python environment:
 ```bash
 (venv) $ python -V
 Python 3.10.4
-```
-
-Next, set up the `SANDBOX_DIR` environment variable such that it points to the Algorand Sandbox directory:
-
-```bash
-export SANDBOX_DIR="path to algorand sandbox directory"
 ```
 
 Then copy the `deploy.ini.example` to `deploy.ini`:

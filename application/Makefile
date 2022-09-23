@@ -4,11 +4,9 @@ NETWORK := default
 
 .PHONY: build
 
-setup-venv:
-	@python -m venv venv
-
 setup:
 	@( \
+		python -m venv venv
 		source venv/bin/activate ; \
 		pip install -r requirements.txt ; \
 		python -m pip install --upgrade pip \
@@ -34,12 +32,11 @@ lint: black flake8 mypy
 
 integration-test: build
 	@( \
-#		[ -z "${SANDBOX_DIR}" ] && echo "SANDBOX_DIR is not set" && exit 1 ; \
 		python -m pytest -n ${TEST_PARALLELISM} -s -v tests/ \
 	)
 
 deploy: build
-	 @python tools/deploy.py --network $(NETWORK)
+	 @python tools/deploy.py --network $(NETWORK) --descriptor build/deployment.json
 
 undeploy:
 	@( \
