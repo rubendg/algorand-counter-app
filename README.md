@@ -13,3 +13,7 @@ Try it out:
 
 - [`application`](./application), contains the application written in PyTeal and some convenience tools for compilation and deployment
 - [`client`](./client), contains a React web frontend for interacting with the application
+
+## Known Issues
+
+- Connecting the dApp to a locally running Algorand node, through WalletConnect + Pera Wallet does not work. Pera wallet currently only allows connecting to either testnet or mainnet.    
