@@ -16,4 +16,4 @@ Try it out:
 
 ## Known Issues
 
-- Connecting the dApp to a locally running Algorand node, through WalletConnect + Pera Wallet does not work. Pera wallet currently only allows connecting to either testnet or mainnet.    
+- Connecting the dApp to a locally running Algorand node through WalletConnect + Pera Wallet does not work. Pera wallet currently only allows connecting to either testnet or mainnet.    
