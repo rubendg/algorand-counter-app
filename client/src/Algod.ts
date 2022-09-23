@@ -2,7 +2,7 @@ import {Algodv2} from "algosdk";
 
 const mainNetClient = new Algodv2("", "https://mainnet-api.algonode.cloud", "");
 const testNetClient = new Algodv2("", "https://node.testnet.algoexplorerapi.io", "");
-const localNetClient = new Algodv2("", "https://localhost", "4001");
+const localNetClient = new Algodv2("a".repeat(64), "http://localhost", "4001");
 
 export enum Network {
     MainNet = "mainnet",
