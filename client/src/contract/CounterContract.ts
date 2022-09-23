@@ -7,10 +7,11 @@ import {
     TransactionSigner, waitForConfirmation
 } from "algosdk";
 import raw from "raw.macro";
-import {uint8ArrayFromBase64} from "./helpers";
+import {uint8ArrayFromBase64} from "../helpers";
 
+// CounterContract makes interacting with the Counter ABI more convenient
 export class CounterContract {
-    private static contract: { approvalProgram: string, clearProgram: string } = JSON.parse(raw('../contract.json'))
+    private static contract: { approvalProgram: string, clearProgram: string } = JSON.parse(raw('../../contract.json'))
 
     static approvalProgram = this.contract.approvalProgram
     static clearProgram = this.contract.clearProgram
@@ -75,16 +76,4 @@ export class CounterContract {
         const { methodResults: [{returnValue}] } = result
         return returnValue as bigint
     }
-}
-
-export class UnexpectedApplication extends Error {}
-
-export async function fetchApplicationInfo(client: Algodv2, appID: number) {
-    const { params: { creator, 'global-state': globalState, 'approval-program': approvalProgram, 'clear-state-program': clearProgram  } } = await client.getApplicationByID(appID).do()
-
-    if (approvalProgram !== CounterContract.approvalProgram || clearProgram !== CounterContract.clearProgram) {
-        throw new UnexpectedApplication()
-    }
-
-    return {appID, count: globalState[0].value.uint, creator }
 }

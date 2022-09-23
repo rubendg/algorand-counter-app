@@ -3,7 +3,7 @@ import React, {useContext, useEffect} from "react";
 import {CounterSelection} from "./CounterSelection";
 import {WalletConnectionState} from "./types";
 import {Button, Stack} from "@mui/material";
-import {CounterContract} from "./CounterContract";
+import {CounterContract} from "./contract/CounterContract";
 import {WalletConnectContext, WalletConnectSigner} from "./walletconnect/WalletConnect";
 import {clientForNetwork} from "./Algod";
 import {Pending, usePendingState} from "./helpers";

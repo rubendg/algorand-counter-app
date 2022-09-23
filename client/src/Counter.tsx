@@ -4,7 +4,7 @@ import {WalletConnectContext, WalletConnectSigner} from "./walletconnect/WalletC
 import {
     Algodv2,
 } from "algosdk";
-import {CounterContract} from "./CounterContract";
+import {CounterContract} from "./contract/CounterContract";
 import {Pending, usePendingState} from "./helpers";
 
 

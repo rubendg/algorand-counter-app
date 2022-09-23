@@ -4,7 +4,20 @@ import React, {useEffect, useState} from "react";
 import {applicationExplorer, clientForNetwork} from "./Algod";
 import {Alert, Stack} from "@mui/material";
 import {Counter} from "./Counter";
-import {fetchApplicationInfo, UnexpectedApplication} from "./CounterContract";
+import {CounterContract} from "./contract/CounterContract";
+import {Algodv2} from "algosdk";
+
+export class UnexpectedApplication extends Error {}
+
+export async function fetchCounterAppInfo(client: Algodv2, appID: number) {
+    const { params: { creator, 'global-state': globalState, 'approval-program': approvalProgram, 'clear-state-program': clearProgram  } } = await client.getApplicationByID(appID).do()
+
+    if (approvalProgram !== CounterContract.approvalProgram || clearProgram !== CounterContract.clearProgram) {
+        throw new UnexpectedApplication()
+    }
+
+    return {appID, count: globalState[0].value.uint, creator }
+}
 
 type Props = { walletConnectionState: WalletConnectionState }
 
@@ -32,7 +45,7 @@ export function CounterRoute({ walletConnectionState }: Props) {
     useEffect(() => {
         (async function () {
             try {
-                const info = await fetchApplicationInfo(client, parsedAppID)
+                const info = await fetchCounterAppInfo(client, parsedAppID)
                 setAppInfo(info)
             } catch(e: any) {
                 if ('status' in e && e.status === 404) {
